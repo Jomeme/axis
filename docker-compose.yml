@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on: 
+      - db
+    image: 'nodejs'
+    container_name: app
+    # restart: unless-stopped
+    env_file: .env
+    environment: 
+      - JWT_SECRET=$JWT_SECRET
+      - DATABASE_URL=$DATABASE_URL
+    ports: 
+      - "8085:8085"
+    volumes: 
+      - .:/app
+      - node_modules:/node_modules
+    networks: 
+      - app-network
+    command: npm run dev
+    # command: ./wait-for.sh -- /app/node_modules/.bin/nodemon index.js
+  db:
+    image: postgres
+    container_name: db
+    # restart: unless-stopped
+    ports: 
+      - 5432:5432
+    env_file: .env
+    environment: 
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_URL=$DATABASE_URL
+    volumes: 
+      - dbdata:/data/db
+    networks: 
+      - app-network
+
+networks: 
+  app-network:
+    driver: bridge
+
+volumes: 
+  dbdata:
+  node_modules:
