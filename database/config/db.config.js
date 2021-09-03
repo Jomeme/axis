@@ -5,4 +5,7 @@ const config = require('./config');
 
 const sequelize = new Sequelize(config[env].url);
 
-module.exports = sequelize;
+// const dropAllTables = async () => {
+// };
+
+module.exports = sequelize

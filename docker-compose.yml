@@ -7,13 +7,11 @@ services:
       dockerfile: Dockerfile
     depends_on: 
       - db
+      - devdb
     image: 'nodejs'
     container_name: app
-    # restart: unless-stopped
+    restart: unless-stopped
     env_file: .env
-    environment: 
-      - JWT_SECRET=$JWT_SECRET
-      - DATABASE_URL=$DATABASE_URL
     ports: 
       - "8085:8085"
     volumes: 
@@ -22,12 +20,10 @@ services:
     networks: 
       - app-network
     entrypoint: ["/bin/bash", "./entrypoint.sh"]
-    # command: npm run dev
-    # command: ./wait-for.sh -- /app/node_modules/.bin/nodemon index.js
   db:
     image: postgres
     container_name: db
-    # restart: unless-stopped
+    restart: unless-stopped
     ports: 
       - 5432:5432
     env_file: .env
@@ -35,9 +31,23 @@ services:
       - POSTGRES_DB=$POSTGRES_DB
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - POSTGRES_URL=$DATABASE_URL
     volumes: 
       - dbdata:/data/db
+    networks: 
+      - app-network
+  devdb:
+    image: postgres
+    container_name: devdb
+    restart: unless-stopped
+    ports: 
+      - 5434:5434
+    env_file: .env
+    environment: 
+      - POSTGRES_DB=$DEV_POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    volumes: 
+      - dbdata:/data/devdb
     networks: 
       - app-network
 
