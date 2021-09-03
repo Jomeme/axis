@@ -1,10 +1,7 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../config/db.config");
-const Task = require("./subtask.model");
 
-class Todo extends Model {
-
-}
+class Todo extends Model {}
 
 Todo.init({
   name: {
@@ -37,7 +34,13 @@ Todo.init({
     allowNull: false,
     validate: {
       notNull: {
-        msg: 'Unable to get picture URL.'
+        msg: 'Please provide a picture URL.'
+      },
+      notEmpty: {
+        msg: 'Please provide a picture URL.'
+      },
+      isUrl: {
+        msg: 'Please provide a valid picture URL.'
       }
     }
   },
@@ -46,7 +49,7 @@ Todo.init({
     allowNull: false,
     validate: {
       notNull: {
-        msg: 'No user associated with todo.'
+        msg: 'No user found.'
       }
     }
   }
@@ -56,11 +59,31 @@ Todo.init({
   tableName: 'Todos'
 });
 
-Todo.associations = (model) => {
-  Todo.hasMany(model.Task, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-  });
-}
+class Task extends Model {}
 
-module.exports = Todo;
+Task.init({
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+}, {
+  sequelize,
+  modelName: 'Task',
+  tableName: 'Tasks'
+});
+
+Todo.Task = Todo.hasMany(Task, {
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+  foreignKey: 'todoId',
+  as: 'subTasks'
+});
+
+Task.Todo = Task.belongsTo(Todo, {
+  foreignKey: {
+    name: 'todoId',
+    allowNull: false
+  }
+});
+
+module.exports = { Todo, Task };

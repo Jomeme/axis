@@ -1,4 +1,4 @@
-const Todo = require("../../database/models/todo.model");
+const { Task, Todo } = require("../../database/models/todo.model");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -16,11 +16,15 @@ const APIError = require("../../utils/APIError");
       where: {
         createdBy: user.id,
         id: todoId
+      },
+      include: {
+        model: Task,
+        as: 'subTasks'
       }
     });
 
     if (!todo) {
-      throw new APIError({ message: 'No todo with Id found', isPublic: true });
+      throw new APIError({ message: 'No todo with Id found', isPublic: true, status: 404 });
     }
 
     res.json({
@@ -28,6 +32,10 @@ const APIError = require("../../utils/APIError");
       todo
     });
   } catch (error) {
-    next(new APIError({ message: error.message, isPublic: true }));
+    if (error instanceof APIError) {
+      next(error);
+    } else {
+      next(new APIError({ message: error.message, isPublic: true }));
+    }
   }
 };

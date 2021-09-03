@@ -12,23 +12,27 @@ const { validate } = require('../validations');
 const createTaskValidate = require('../validations/task/createTask.validate');
 const deleteTaskValidate = require('../validations/task/deleteTask.validate');
 const updateTaskValidate = require('../validations/task/updateTask.validate');
+const createTodoValidate = require('../validations/todo/createTodo.validate');
+const deleteTodoValidate = require('../validations/todo/deleteTodo.validate');
+const getTodoValidate = require('../validations/todo/getTodo.validate');
+const updateTodoValidate = require('../validations/todo/updateTodo.validate');
 
 const todoRouter = require('express').Router();
 
 todoRouter.get('/', verifyToken, wrap(fetchAllTodos));
 
-todoRouter.get('/:todoId', verifyToken, wrap(getTodo));
+todoRouter.get('/:todoId', verifyToken, getTodoValidate(), validate, wrap(getTodo));
 
-todoRouter.post('/', verifyToken, wrap(createTodo));
+todoRouter.post('/', verifyToken, createTodoValidate(), validate, wrap(createTodo));
 
-todoRouter.patch('/:todoId', verifyToken, wrap(updateTodo));
+todoRouter.patch('/:todoId', verifyToken, updateTodoValidate(), validate, wrap(updateTodo));
 
-todoRouter.delete('/:todoId', verifyToken, wrap(deleteTodo));
+todoRouter.delete('/:todoId', verifyToken, deleteTodoValidate(), validate, wrap(deleteTodo));
 
-todoRouter.post('/:todoId/:taskId', verifyToken, wrap(createSubTask));
+todoRouter.post('/:todoId', verifyToken, createTaskValidate(), validate, wrap(createSubTask));
 
-todoRouter.patch('/:todoId/:taskId', verifyToken, wrap(updateSubTask));
+todoRouter.patch('/:todoId/:taskId', verifyToken, updateTaskValidate(), validate, wrap(updateSubTask));
 
-todoRouter.delete('/:todoId/:taskId', verifyToken, wrap(deleteSubTask));
+todoRouter.delete('/:todoId/:taskId', verifyToken, deleteTaskValidate(), validate, wrap(deleteSubTask));
 
 module.exports = todoRouter;

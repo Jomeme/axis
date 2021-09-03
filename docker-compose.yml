@@ -21,7 +21,8 @@ services:
       - node_modules:/node_modules
     networks: 
       - app-network
-    command: npm run dev
+    entrypoint: ["/bin/bash", "./entrypoint.sh"]
+    # command: npm run dev
     # command: ./wait-for.sh -- /app/node_modules/.bin/nodemon index.js
   db:
     image: postgres

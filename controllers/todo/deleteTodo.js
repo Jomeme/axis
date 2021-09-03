@@ -1,4 +1,4 @@
-const Todo = require("../../database/models/todo.model");
+const { Todo } = require("../../database/models/todo.model");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -20,7 +20,7 @@ const APIError = require("../../utils/APIError");
     });
 
     if (!todo) {
-      throw new APIError({ message: 'No todo with Id found', isPublic: true });
+      throw new APIError({ message: 'No todo with Id found', isPublic: true, status: 404 });
     }
 
     await todo.destroy();
@@ -30,6 +30,10 @@ const APIError = require("../../utils/APIError");
       deletedTodo: todo
     })
   } catch (error) {
-    next(new APIError({ message: error.message, isPublic: true }));
+    if (error instanceof APIError) {
+      next(error);
+    } else {
+      next(new APIError({ message: error.message, isPublic: true }));
+    }
   }
 };

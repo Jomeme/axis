@@ -1,4 +1,4 @@
-const Todo = require("../../database/models/todo.model");
+const { Task, Todo } = require("../../database/models/todo.model");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -14,6 +14,10 @@ const APIError = require("../../utils/APIError");
     const todos = await Todo.findAll({
       where: {
         createdBy: user.id
+      },
+      include: {
+        model: Task,
+        as: 'subTasks'
       }
     });
 
