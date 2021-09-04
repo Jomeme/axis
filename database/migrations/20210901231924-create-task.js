@@ -25,7 +25,9 @@ module.exports = {
           key: 'id',
           as: 'todoId'
         }
-      }
+      },
+      createdAt: Sequelize.DATE,
+      updatedAt: Sequelize.DATE
     });
   },
 

@@ -2,7 +2,7 @@
 
 # entrypoint.sh
 
-# npm install
+npm install
 npx sequelize db:migrate
 npm run test
 npm start
