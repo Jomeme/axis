@@ -141,7 +141,7 @@ describe('Todo Tests', () => {
           .post('/api/todos')
           .set({ Authorization: `Bearer ${user.token}` })
           .send(todo);
-      console.log(res.body)
+          
       res.should.have.status(200);
       res.body.should.be.a('object');
       res.body.should.have.property('todo').be.a('object');
