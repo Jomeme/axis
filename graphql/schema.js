@@ -9,7 +9,7 @@ const schema = buildSchema(`
     createdBy: Int!
     createdAt: String!
     updatedAt: String!
-    subTasks: [Task]
+    subTasks: [Task!]!
   }
 
   type Task {
@@ -21,12 +21,12 @@ const schema = buildSchema(`
   }
 
   type TodoQuery {
-    allTodos: [Todo]
+    allTodos: [Todo!]!
     getTodo(id: String!): Todo
     getTodoName(id: String!): String
     getTodoDate(id: String!): String
     getTodoPicture(id: String!): String
-    getTodoSubTasks(id: String!): [Task]
+    getTodoSubTasks(id: String!): [Task!]!
   }
 
   type Query {
