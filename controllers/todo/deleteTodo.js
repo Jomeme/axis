@@ -1,4 +1,6 @@
 const { Todo } = require("../../database/models/todo.model");
+const deleteATodo = require("../../handlers/deleteATodo");
+const getATodo = require("../../handlers/getATodo");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -12,18 +14,9 @@ const APIError = require("../../utils/APIError");
     const user = req.user;
     const { todoId } = req.params;
 
-    const todo = await Todo.findOne({
-      where: {
-        createdBy: user.id,
-        id: todoId
-      },
-    });
+    const todo = await getATodo(user.id, todoId);
 
-    if (!todo) {
-      throw new APIError({ message: 'No todo with Id found', isPublic: true, status: 404 });
-    }
-
-    await todo.destroy();
+    await deleteATodo(todo);
 
     res.json({
       message: 'Deleted successfully',

@@ -1,4 +1,5 @@
 const { Todo, Task } = require("../../database/models/todo.model");
+const getATodo = require("../../handlers/getATodo");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -12,23 +13,14 @@ const APIError = require("../../utils/APIError");
     const user = req.user;
     const { todoId, taskId } = req.params;
 
-    const todo = await Todo.findOne({
-      where: {
-        createdBy: user.id,
-        id: todoId
-      },
-    });
+    const todo = await getATodo(user.id, todoId);
 
-    if (!todo) {
-      throw new APIError({ message: 'No todo with Id found', isPublic: true, status: 404 });
-    }
-
-    const task = await Task.findOne({
+    const task = (await todo.getSubTasks({
       where: {
         todoId: todo.id,
         id: taskId
       }
-    });
+    }))[0];
 
     if (!task) {
       throw new APIError({ message: 'No task with Id found', isPublic: true, status: 404 });

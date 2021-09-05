@@ -1,4 +1,6 @@
 const { Todo } = require("../../database/models/todo.model");
+const getATodo = require("../../handlers/getATodo");
+const updateATodo = require("../../handlers/updateATodo");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -12,18 +14,9 @@ const APIError = require("../../utils/APIError");
     const user = req.user;
     const { todoId } = req.params;
 
-    const todo = await Todo.findOne({
-      where: {
-        createdBy: user.id,
-        id: todoId
-      },
-    });
+    const todo = await getATodo(user.id, todoId);
 
-    if (!todo) {
-      throw new APIError({ message: 'No todo with Id found', isPublic: true, status: 404 });
-    }
-
-    const update = await todo.update({ ...req.body });
+    const update = await updateATodo(todo, req.body);
 
     console.log(update);
     res.json({

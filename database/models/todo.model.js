@@ -3,6 +3,9 @@ const sequelize = require("../config/db.config");
 
 class Todo extends Model {}
 
+const now = new Date();
+const oneHourLater = now.setHours(now.getHours() + 1);
+
 Todo.init({
   name: {
     type: DataTypes.STRING,
@@ -26,7 +29,8 @@ Todo.init({
       },
       notNull: {
         msg: 'Please provide a date for the todo'
-      }
+      },
+      isBefore: new Date(oneHourLater).toISOString()
     }
   },
   picture: {

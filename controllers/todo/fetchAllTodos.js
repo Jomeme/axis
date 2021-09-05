@@ -1,4 +1,5 @@
 const { Task, Todo } = require("../../database/models/todo.model");
+const getAllTodo = require("../../handlers/getAllTodo");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -11,15 +12,7 @@ const APIError = require("../../utils/APIError");
   try {
     const user = req.user;
 
-    const todos = await Todo.findAll({
-      where: {
-        createdBy: user.id
-      },
-      include: {
-        model: Task,
-        as: 'subTasks'
-      }
-    });
+    const todos = await getAllTodo(user.id);
 
     res.json({
       message: 'Todos fetched successfully',

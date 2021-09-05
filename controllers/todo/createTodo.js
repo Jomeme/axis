@@ -1,4 +1,4 @@
-const { Todo } = require("../../database/models/todo.model");
+const createATodo = require("../../handlers/createATodo");
 const APIError = require("../../utils/APIError");
 
 /**
@@ -10,7 +10,7 @@ const APIError = require("../../utils/APIError");
  module.exports = async (req, res, next) => {
   try {
     const user = req.user;
-    const todo = await Todo.create({ ...req.body, createdBy: user.id });
+    const todo = await createATodo({ ...req.body, createdBy: user.id });
     res.json({
       message: 'Todo created successfully',
       todo

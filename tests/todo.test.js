@@ -1,9 +1,11 @@
 // Dev Dependencies
 process.env.NODE_ENV = 'development';
 
+const { expect } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const sequelize = require('../database/config/db.config');
+const createATodo = require('../handlers/createATodo');
 const should = chai.should();
 
 const server = require('../index');
@@ -22,6 +24,75 @@ describe('Todo Tests', () => {
     const res = await chai.request(server).post('/api/auth/register').send(payload);
 
     user = res.body.data;
+  });
+
+  /**
+   * Performing Unit Tests For Business Rules.
+   */
+
+  describe('UNIT TESTS', async () => {
+    const asyncExpect = async (method, errorMessage) => {
+      let error = null;
+      try {
+        await method();
+      } catch (e) {
+        error = e;
+        console.log(e.message)
+      }
+
+      expect(error).to.be.an('Error');
+
+      if (errorMessage) {
+        expect(error.message).to.equal(errorMessage);
+      }
+    }
+
+    it('It should reject creation due to createdBy field missing', async () => {
+      const payload = {
+        name: 'A todo op',
+        date: '2021-09-03T00:51:18.134Z',
+        picture: 'http://upload.com/api/pictures',
+      };
+
+      await asyncExpect(() => createATodo(payload), 'notNull Violation: No user found.');
+    });
+
+    it('It should reject creation due to short todo name', async () => {
+      const payload = {
+        name: 'A t',
+        date: '2021-09-03T00:51:18.134Z',
+        picture: 'http://upload.com/api/pictures',
+        createdBy: 1
+      };
+
+      await asyncExpect(() => createATodo(payload), 'Validation error: Todo name must have character length between 8 and 15');
+    });
+
+    it('It should reject creation due to date being in future', async () => {
+      const now = new Date();
+      const tomorrow = now.setDate(now.getDate() + 1);
+      const payload = {
+        name: 'A todo name',
+        date: new Date(tomorrow).toISOString(),
+        picture: 'http://upload.com/api/pictures',
+        createdBy: 1
+      };
+
+      await asyncExpect(() => createATodo(payload),);
+    });
+
+    it('It should create a todo', async () => {
+      const payload = {
+        name: 'A todo name',
+        date: '2021-09-03T00:51:18.134Z',
+        picture: 'http://upload.com/api/pictures',
+        createdBy: 1
+      };
+
+      const todo = await createATodo(payload);
+      expect(todo.toJSON()).to.be.a('object');
+      expect(todo.toJSON()).to.have.property('name').to.be.equal('A todo name');
+    });
   });
 
   /**
